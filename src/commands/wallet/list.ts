@@ -36,7 +36,7 @@ static flags = {
       this.log(
         style.warning('No wallets.') +
           ' ' +
-          style.dim('Create one with: agent-wallet wallet create <name>')
+          style.dim('Create one with: cli-wallet wallet create <name>')
       )
       return
     }

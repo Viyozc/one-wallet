@@ -2,13 +2,13 @@ import {existsSync, mkdirSync} from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 
-const dirName = 'agent-wallet'
+const dirName = 'cli-wallet'
 
 /**
- * Base config directory (AGENT_WALLET_HOME or ~/.agent-wallet)
+ * Base config directory (AGENT_WALLET_HOME or ~/.cli-wallet)
  */
 export function getConfigDir(): string {
-  const base = process.env.AGENT_WALLET_HOME || path.join(os.homedir(), '.agent-wallet')
+  const base = process.env.AGENT_WALLET_HOME || path.join(os.homedir(), '.cli-wallet')
   const dir = path.join(base, dirName)
   if (!existsSync(dir)) {
     mkdirSync(dir, {recursive: true})
