@@ -1,8 +1,9 @@
 import {Args, Command, Flags} from '@oclif/core'
 import {ethers} from 'ethers'
 
+import {encryptPrivateKey} from '../../lib/crypto.js'
 import {loadConfig, loadWallets, saveConfig, saveWallets} from '../../lib/store.js'
-import {style, useFancyUi} from '../../lib/ui.js'
+import {promptPassword, style, useFancyUi} from '../../lib/ui.js'
 
 export default class WalletCreate extends Command {
   static args = {
@@ -14,7 +15,8 @@ export default class WalletCreate extends Command {
 static description = 'Create a new wallet (or import from private key).'
 static examples = [
     `<%= config.bin %> <%= command.id %> my-agent`,
-    `<%= config.bin %> <%= command.id %> my-agent --import <private-key>`,
+    `<%= config.bin %> <%= command.id %> my-agent --password`,
+    `<%= config.bin %> <%= command.id %> my-agent --import <private-key> --password`,
     `<%= config.bin %> <%= command.id %> my-agent --set-default --json`,
   ]
 static flags = {
@@ -25,6 +27,10 @@ static flags = {
     json: Flags.boolean({
       default: false,
       description: 'Output address and name as JSON.',
+    }),
+    password: Flags.boolean({
+      default: false,
+      description: 'Encrypt private key with a password (prompt twice).',
     }),
     setDefault: Flags.boolean({
       default: false,
@@ -53,11 +59,30 @@ static flags = {
       wallet = ethers.Wallet.createRandom()
     }
 
-    const entry = {
-      address: wallet.address,
-      createdAt: new Date().toISOString(),
-      privateKey: wallet.privateKey,
+    let entry: import('../../lib/store.js').WalletEntry
+    if (flags.password) {
+      const password =
+        (await promptPassword('Password:')) ||
+        this.error('Password cannot be empty.')
+      const again = await promptPassword('Confirm password:')
+      if (password !== again) {
+        this.error('Passwords do not match.')
+      }
+
+      const cipher = encryptPrivateKey(password, wallet.privateKey)
+      entry = {
+        address: wallet.address,
+        cipher,
+        createdAt: new Date().toISOString(),
+      }
+    } else {
+      entry = {
+        address: wallet.address,
+        createdAt: new Date().toISOString(),
+        privateKey: wallet.privateKey,
+      }
     }
+
     data.wallets[name] = entry
     saveWallets(data)
 
@@ -88,10 +113,12 @@ static flags = {
           style.value(wallet.address)
       )
       if (flags.import) this.log(style.dim('(imported from private key)'))
+      if (flags.password) this.log(style.dim('(private key encrypted with password)'))
       if (flags.setDefault) this.log(style.info('Set as default wallet.'))
     } else {
       this.log(`Created wallet "${name}": ${wallet.address}`)
       if (flags.import) this.log('(imported from private key)')
+      if (flags.password) this.log('(private key encrypted with password)')
       if (flags.setDefault) this.log('Set as default wallet.')
     }
   }

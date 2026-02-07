@@ -1,12 +1,23 @@
 import {existsSync, readFileSync, writeFileSync} from 'node:fs'
 
+import type {CipherPayload} from './crypto.js'
+
 import {getConfigPath, getProviderPath, getWalletsPath} from './paths.js'
+
+export type {CipherPayload} from './crypto.js'
 
 export interface WalletEntry {
   address: string
+  /** Encrypted private key when password protection is enabled. */
+  cipher?: CipherPayload
   createdAt?: string
-  /** Encrypted or plain private key; for agent dev, often plain. */
-  privateKey: string
+  /** Plain private key (hex). Omitted when cipher is set. */
+  privateKey?: string
+}
+
+/** True if this wallet requires a password to unlock. */
+export function isEncryptedWallet(entry: WalletEntry): boolean {
+  return Boolean(entry.cipher && !entry.privateKey)
 }
 
 export interface WalletsData {

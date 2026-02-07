@@ -29,7 +29,7 @@ export default class WalletSignMessage extends Command {
 
   async run(): Promise<void> {
     const {flags} = await this.parse(WalletSignMessage)
-    const {privateKey} = resolveWalletPrivateKey(flags.wallet)
+    const {privateKey} = await resolveWalletPrivateKey(flags.wallet)
     const wallet = getWallet(privateKey)
 
     const {message} = flags

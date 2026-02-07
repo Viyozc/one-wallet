@@ -37,3 +37,17 @@ export function getConfigPath(): string {
 export function getProviderPath(): string {
   return path.join(getConfigDir(), 'provider.json')
 }
+
+/**
+ * Path to session file (encrypted passwords with TTL; cleared by wallet lock)
+ */
+export function getSessionPath(): string {
+  return path.join(getConfigDir(), 'session.json')
+}
+
+/**
+ * Path to session key file (random key used to encrypt passwords in session.json)
+ */
+export function getSessionKeyPath(): string {
+  return path.join(getConfigDir(), 'session.key')
+}

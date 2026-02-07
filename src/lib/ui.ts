@@ -61,3 +61,18 @@ export async function confirm(message: string, defaultYes = false): Promise<bool
   ])
   return ok
 }
+
+/** Prompt for password (hidden input). Use when TTY; otherwise returns empty or use env. */
+export async function promptPassword(message: string): Promise<string> {
+  if (!process.stdin.isTTY) return ''
+  const {default: inquirer} = await import('inquirer')
+  const {password} = await inquirer.prompt<{password: string}>([
+    {
+      mask: '*',
+      message,
+      name: 'password',
+      type: 'password',
+    },
+  ])
+  return password ?? ''
+}

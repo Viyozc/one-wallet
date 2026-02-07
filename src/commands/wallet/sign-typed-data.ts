@@ -40,7 +40,7 @@ export default class WalletSignTypedData extends Command {
 
   async run(): Promise<void> {
     const {flags} = await this.parse(WalletSignTypedData)
-    const {privateKey} = resolveWalletPrivateKey(flags.wallet)
+    const {privateKey} = await resolveWalletPrivateKey(flags.wallet)
     const wallet = getWallet(privateKey)
 
     let raw: string

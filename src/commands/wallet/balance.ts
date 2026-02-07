@@ -27,7 +27,7 @@ static flags = {
 
   async run(): Promise<void> {
     const {args, flags} = await this.parse(WalletBalance)
-    const {name, privateKey} = resolveWalletPrivateKey(args.wallet)
+    const {name, privateKey} = await resolveWalletPrivateKey(args.wallet)
     const provider = getProvider()
     const wallet = new ethers.Wallet(privateKey, provider)
     const fancy = useFancyUi(flags)

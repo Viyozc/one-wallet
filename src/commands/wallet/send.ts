@@ -61,7 +61,7 @@ static flags = {
 
   async run(): Promise<void> {
     const {args, flags} = await this.parse(WalletSend)
-    const {privateKey} = resolveWalletPrivateKey(flags.wallet)
+    const {privateKey} = await resolveWalletPrivateKey(flags.wallet)
     const provider = getProvider()
     const wallet = getWallet(privateKey, provider)
 

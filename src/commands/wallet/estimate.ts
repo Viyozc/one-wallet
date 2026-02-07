@@ -51,7 +51,7 @@ export default class WalletEstimate extends Command {
   async run(): Promise<void> {
     const {args, flags} = await this.parse(WalletEstimate)
     const provider = getProvider()
-    const {privateKey} = resolveWalletPrivateKey(flags.wallet)
+    const {privateKey} = await resolveWalletPrivateKey(flags.wallet)
     const wallet = getWallet(privateKey, provider)
 
     const {to} = args

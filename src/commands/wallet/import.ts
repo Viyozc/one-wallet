@@ -2,7 +2,9 @@ import {Args, Command, Flags} from '@oclif/core'
 import {ethers} from 'ethers'
 import * as readline from 'node:readline'
 
+import {encryptPrivateKey} from '../../lib/crypto.js'
 import {loadConfig, loadWallets, saveConfig, saveWallets} from '../../lib/store.js'
+import {promptPassword} from '../../lib/ui.js'
 
 export default class WalletImport extends Command {
   static args = {
@@ -15,6 +17,7 @@ export default class WalletImport extends Command {
     'Import a wallet from private key (--private-key or stdin for security).'
   static examples = [
     `<%= config.bin %> <%= command.id %> my-agent --private-key 0x...`,
+    `<%= config.bin %> <%= command.id %> my-agent --private-key 0x... --password`,
     `echo $PRIVATE_KEY | <%= config.bin %> <%= command.id %> my-agent`,
     `<%= config.bin %> <%= command.id %> my-agent --private-key 0x... --set-default --json`,
   ]
@@ -22,6 +25,10 @@ export default class WalletImport extends Command {
     json: Flags.boolean({
       default: false,
       description: 'Output address and name as JSON.',
+    }),
+    password: Flags.boolean({
+      default: false,
+      description: 'Encrypt private key with a password (prompt twice).',
     }),
     privateKey: Flags.string({
       char: 'k',
@@ -60,11 +67,27 @@ export default class WalletImport extends Command {
       this.error(`Invalid private key: ${(error as Error).message}`)
     }
 
-    const entry = {
-      address: wallet.address,
-      createdAt: new Date().toISOString(),
-      privateKey: wallet.privateKey,
+    let entry: import('../../lib/store.js').WalletEntry
+    if (flags.password) {
+      const password =
+        (await promptPassword('Password:')) ||
+        this.error('Password cannot be empty.')
+      const again = await promptPassword('Confirm password:')
+      if (password !== again) this.error('Passwords do not match.')
+      const cipher = encryptPrivateKey(password, wallet.privateKey)
+      entry = {
+        address: wallet.address,
+        cipher,
+        createdAt: new Date().toISOString(),
+      }
+    } else {
+      entry = {
+        address: wallet.address,
+        createdAt: new Date().toISOString(),
+        privateKey: wallet.privateKey,
+      }
     }
+
     data.wallets[name] = entry
     saveWallets(data)
 
@@ -86,6 +109,7 @@ export default class WalletImport extends Command {
     }
 
     this.log(`Imported wallet "${name}": ${wallet.address}`)
+    if (flags.password) this.log('(private key encrypted with password)')
     if (flags.setDefault) this.log('Set as default wallet.')
   }
 
