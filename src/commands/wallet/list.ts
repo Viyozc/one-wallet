@@ -25,10 +25,10 @@ static flags = {
     if (flags.json) {
       const list = names.map((name) => ({
         address: data.wallets[name]!.address,
-        isDefault: config.defaultWallet === name,
+        isDefault: config.default === name,
         name,
       }))
-      this.log(JSON.stringify({default: config.defaultWallet, wallets: list}))
+      this.log(JSON.stringify({default: config.default, wallets: list}))
       return
     }
 
@@ -36,7 +36,7 @@ static flags = {
       this.log(
         style.warning('No wallets.') +
           ' ' +
-          style.dim('Create one with: cli-wallet wallet create <name>')
+          style.dim('Create one with: one-wallet wallet create <name>')
       )
       return
     }
@@ -44,11 +44,11 @@ static flags = {
     const fancy = useFancyUi(flags)
     for (const name of names) {
       const w = data.wallets[name]!
-      const mark = config.defaultWallet === name ? ' ' + style.info('(default)') : ''
+      const mark = config.default === name ? ' ' + style.info('(default)') : ''
       this.log(
         fancy
           ? style.label(name) + style.dim(': ') + style.value(w.address) + mark
-          : `${name}: ${w.address}${config.defaultWallet === name ? ' (default)' : ''}`
+          : `${name}: ${w.address}${config.default === name ? ' (default)' : ''}`
       )
     }
   }

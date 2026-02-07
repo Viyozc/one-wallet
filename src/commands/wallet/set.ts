@@ -2,10 +2,10 @@ import {Args, Command, Flags} from '@oclif/core'
 
 import {loadConfig, saveConfig} from '../../lib/store.js'
 
-export default class WalletConfig extends Command {
+export default class WalletSet extends Command {
   static args = {
     key: Args.string({
-      description: 'Config key: defaultWallet.',
+      description: 'Key: default (default wallet name).',
       required: false,
     }),
     value: Args.string({
@@ -13,11 +13,12 @@ export default class WalletConfig extends Command {
       required: false,
     }),
   }
-  static description = 'Get or set global config (defaultWallet). Use "provider list" / "provider set" for RPC.'
+  static description =
+    'Get or set global config. Use "default" to get/set default wallet.'
   static examples = [
     `<%= config.bin %> <%= command.id %>`,
-    `<%= config.bin %> <%= command.id %> defaultWallet`,
-    `<%= config.bin %> <%= command.id %> defaultWallet my-agent`,
+    `<%= config.bin %> <%= command.id %> default`,
+    `<%= config.bin %> <%= command.id %> default my-agent`,
     `<%= config.bin %> <%= command.id %> --json`,
   ]
   static flags = {
@@ -29,7 +30,7 @@ export default class WalletConfig extends Command {
   }
 
   async run(): Promise<void> {
-    const {args, flags} = await this.parse(WalletConfig)
+    const {args, flags} = await this.parse(WalletSet)
     const config = loadConfig()
 
     if (!args.key) {
@@ -39,15 +40,17 @@ export default class WalletConfig extends Command {
       }
 
       this.log('Current config:')
-      this.log(`  defaultWallet: ${config.defaultWallet ?? '(not set)'}`)
+      this.log(`  default: ${config.default ?? '(not set)'}`)
       return
     }
 
-    const key = args.key as 'defaultWallet'
-    const validKeys = ['defaultWallet']
+    const key = args.key as 'default'
+    const validKeys = ['default']
 
     if (!validKeys.includes(key)) {
-      this.error(`Invalid key. Use: defaultWallet. For RPC use "provider list" / "provider set".`)
+      this.error(
+        `Invalid key. Use: default. For RPC use "provider list" / "provider set".`
+      )
     }
 
     if (args.value === undefined) {

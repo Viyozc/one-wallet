@@ -19,7 +19,7 @@ export const style = {
   warning: chalk.yellow,
 }
 
-/** Render ASCII banner (e.g. "cli-wallet") using figlet. */
+/** Render ASCII banner (e.g. "one-wallet") using figlet. */
 export async function renderBanner(text: string): Promise<string> {
   const {default: figlet} = await import('figlet')
   return figlet.text(text, {font: 'Slant', horizontalLayout: 'default'})

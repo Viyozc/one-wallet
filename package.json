@@ -1,12 +1,12 @@
 {
-  "name": "cli-wallet",
+  "name": "one-wallet",
   "description": "A Cli wallet for EVM chains, built for AI, agents, scripts, and automation.",
-  "version": "0.0.0",
+  "version": "0.0.3",
   "author": "jerry",
   "bin": {
-    "cli-wallet": "./bin/run.js"
+    "one-wallet": "./bin/run.js"
   },
-  "bugs": "https://github.com/viyozc/cli-wallet/issues",
+  "bugs": "https://github.com/viyozc/one-wallet/issues",
   "dependencies": {
     "@oclif/core": "^4",
     "@oclif/plugin-help": "^6",
@@ -23,8 +23,8 @@
     "@oclif/prettier-config": "^0.2.1",
     "@oclif/test": "^4",
     "@types/chai": "^4",
-    "@types/mocha": "^10",
     "@types/inquirer": "^8.2.10",
+    "@types/mocha": "^10",
     "@types/node": "^18",
     "chai": "^4",
     "eslint": "^9",
@@ -44,7 +44,7 @@
     "./dist",
     "./oclif.manifest.json"
   ],
-  "homepage": "https://github.com/viyozc/cli-wallet",
+  "homepage": "https://github.com/viyozc/one-wallet",
   "keywords": [
     "oclif"
   ],
@@ -52,24 +52,28 @@
   "main": "dist/index.js",
   "type": "module",
   "oclif": {
-    "bin": "cli-wallet",
-    "dirname": "cli-wallet",
+    "bin": "one-wallet",
+    "dirname": "one-wallet",
     "commands": "./dist/commands",
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-plugins"
     ],
     "topicSeparator": " ",
+    "hooks": {
+      "init": "./dist/hooks/init.js",
+      "prerun": "./dist/hooks/prerun.js"
+    },
     "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
-      },
       "provider": {
-        "description": "Manage RPC provider (list presets, set by name or custom URL)"
+        "description": "Manage RPC provider: list presets, set mainnet/sepolia/custom URL"
+      },
+      "wallet": {
+        "description": "Wallets: create, import, list, set default; balance, send, call, estimate, tx; sign message/typed-data, verify"
       }
     }
   },
-  "repository": "viyozc/cli-wallet",
+  "repository": "viyozc/one-wallet",
   "scripts": {
     "build": "shx rm -rf dist && tsc -b",
     "lint": "eslint",

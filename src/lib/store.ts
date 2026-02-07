@@ -14,7 +14,7 @@ export interface WalletsData {
 }
 
 export interface GlobalConfig {
-  defaultWallet?: string
+  default?: string
 }
 
 export interface ProviderState {
@@ -48,7 +48,13 @@ export function loadConfig(): GlobalConfig {
   if (!existsSync(p)) return {...defaultConfig}
   try {
     const raw = readFileSync(p, 'utf8')
-    return {...defaultConfig, ...JSON.parse(raw)} as GlobalConfig
+    const parsed = {...defaultConfig, ...JSON.parse(raw)} as GlobalConfig & {defaultWallet?: string}
+    // Migrate legacy key defaultWallet -> default
+    if (parsed.default === undefined && parsed.defaultWallet !== undefined) {
+      parsed.default = parsed.defaultWallet
+    }
+
+    return parsed as GlobalConfig
   } catch {
     return {...defaultConfig}
   }

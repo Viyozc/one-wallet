@@ -1,11 +1,11 @@
-# cli-wallet
+# one-wallet
 
 **A CLI wallet for Ethereum and EVM chains—built for agents, scripts, and automation.**
 
 Create and manage multiple wallets, query balances, send transactions, call contracts, and sign messages—all from the terminal with optional JSON output for piping into other tools.
 
-[![npm version](https://img.shields.io/npm/v/cli-wallet.svg)](https://www.npmjs.com/package/cli-wallet)
-[![Node.js](https://img.shields.io/node/v/cli-wallet)](https://nodejs.org)
+[![npm version](https://img.shields.io/npm/v/one-wallet.svg)](https://www.npmjs.com/package/one-wallet)
+[![Node.js](https://img.shields.io/node/v/one-wallet)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
@@ -34,17 +34,17 @@ Create and manage multiple wallets, query balances, send transactions, call cont
 ### From npm (recommended)
 
 ```bash
-npm install -g cli-wallet
+npm install -g one-wallet
 # or
-yarn global add cli-wallet
-pnpm add -g cli-wallet
+yarn global add one-wallet
+pnpm add -g one-wallet
 ```
 
 ### From source
 
 ```bash
-git clone https://github.com/viyozc/cli-wallet.git
-cd cli-wallet
+git clone https://github.com/viyozc/one-wallet.git
+cd one-wallet
 yarn install
 yarn build
 ./bin/run.js --help
@@ -56,18 +56,18 @@ yarn build
 
 ```bash
 # Show welcome and command overview
-cli-wallet welcome
+one-wallet welcome
 
 # 1. Set RPC (preset or custom URL)
-cli-wallet provider set mainnet
-# or: cli-wallet provider set https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY
+one-wallet provider set mainnet
+# or: one-wallet provider set https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY
 
 # 2. Create a wallet and set as default
-cli-wallet wallet create my-agent --set-default
+one-wallet wallet create my-agent --set-default
 
 # 3. Check balance and send ETH
-cli-wallet wallet balance
-cli-wallet wallet send 0xRecipientAddress 0.01
+one-wallet wallet balance
+one-wallet wallet send 0xRecipientAddress 0.01
 ```
 
 ---
@@ -81,7 +81,7 @@ cli-wallet wallet send 0xRecipientAddress 0.01
 | `wallet create <name>` | Create a new wallet. `--import <key>` to import; `--set-default` to set as default. |
 | `wallet import <name>` | Import from private key (`--private-key` or stdin). `--set-default` optional. |
 | `wallet list` | List all wallets (name, address, default). `--json` for machine output. |
-| `wallet config [key] [value]` | Get or set global config (e.g. `defaultWallet`). RPC is via `provider` commands. |
+| `wallet set [key] [value]` | Get or set global config (e.g. `default` for default wallet). RPC is via `provider` commands. |
 | `wallet path` | Print the directory where wallet and config files are stored. |
 | `wallet balance [name]` | Native ETH balance of a stored wallet (default wallet if name omitted). |
 | `wallet balance-of <address>` | Native ETH balance of any address. |
@@ -123,12 +123,12 @@ Examples:
 
 ```bash
 # ERC20 balance and transfer
-cli-wallet wallet call 0xToken balanceOf 0xAccount --abi erc20
-cli-wallet wallet send 0xToken --method transfer --args 0xTo,1000000 --abi erc20
+one-wallet wallet call 0xToken balanceOf 0xAccount --abi erc20
+one-wallet wallet send 0xToken --method transfer --args 0xTo,1000000 --abi erc20
 
 # NFT owner and safeTransferFrom
-cli-wallet wallet call 0xNFT ownerOf 1 --abi nft
-cli-wallet wallet send 0xNFT --method safeTransferFrom --args 0xFrom,0xTo,1 --abi nft
+one-wallet wallet call 0xNFT ownerOf 1 --abi nft
+one-wallet wallet send 0xNFT --method safeTransferFrom --args 0xFrom,0xTo,1 --abi nft
 ```
 
 ---
@@ -137,7 +137,7 @@ cli-wallet wallet send 0xNFT --method safeTransferFrom --args 0xFrom,0xTo,1 --ab
 
 - **Config / wallets** — Stored under the CLI data directory (see `wallet path`). Same layout as other [oclif](https://oclif.io) apps.
 - **RPC** — Set via `provider set` or env: `AGENT_WALLET_RPC_URL`, `AGENT_WALLET_CHAIN_ID`.
-- **Default wallet** — `wallet config defaultWallet <name>` or when creating/importing with `--set-default`.
+- **Default wallet** — `wallet set default <name>` or when creating/importing with `--set-default`.
 - **Override key per wallet** — `AGENT_WALLET_KEY_<WALLET_NAME>` (e.g. `AGENT_WALLET_KEY_MY_AGENT`) to use that env value instead of the stored key.
 
 ---
@@ -146,35 +146,35 @@ cli-wallet wallet send 0xNFT --method safeTransferFrom --args 0xFrom,0xTo,1 --ab
 
 ```bash
 # Create and use a wallet
-cli-wallet wallet create bot --set-default
-cli-wallet wallet balance
+one-wallet wallet create bot --set-default
+one-wallet wallet balance
 
 # Import from private key (or stdin for security)
-cli-wallet wallet import prod --private-key 0x...
-echo "$PRIVATE_KEY" | cli-wallet wallet import staging
+one-wallet wallet import prod --private-key 0x...
+echo "$PRIVATE_KEY" | one-wallet wallet import staging
 
 # Query any address balance
-cli-wallet wallet balance-of 0x742d35Cc6634C0532925a3b844Bc454e4438f44e
+one-wallet wallet balance-of 0x742d35Cc6634C0532925a3b844Bc454e4438f44e
 
 # Contract read with preset ABI
-cli-wallet wallet call 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 symbol --abi erc20
-cli-wallet wallet call 0xA0b8... totalSupply --abi erc20 --json
+one-wallet wallet call 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 symbol --abi erc20
+one-wallet wallet call 0xA0b8... totalSupply --abi erc20 --json
 
 # Estimate gas then send (with optional confirmation)
-cli-wallet wallet estimate 0xRecipient 0.1
-cli-wallet wallet send 0xRecipient 0.1 -y
+one-wallet wallet estimate 0xRecipient 0.1
+one-wallet wallet send 0xRecipient 0.1 -y
 
 # ERC20 approve and transfer
-cli-wallet wallet send 0xToken --method approve --args 0xSpender,1000000 --abi erc20 -y
-cli-wallet wallet send 0xToken --method transfer --args 0xTo,1000000 --abi erc20 -y
+one-wallet wallet send 0xToken --method approve --args 0xSpender,1000000 --abi erc20 -y
+one-wallet wallet send 0xToken --method transfer --args 0xTo,1000000 --abi erc20 -y
 
 # Sign message and verify
-cli-wallet wallet sign-message --message "Hello, agent" --json
-cli-wallet wallet verify-signature "Hello, agent" 0x... --expected 0xRecoveredAddress
+one-wallet wallet sign-message --message "Hello, agent" --json
+one-wallet wallet verify-signature "Hello, agent" 0x... --expected 0xRecoveredAddress
 
 # Transaction status
-cli-wallet wallet tx 0x...
-cli-wallet wallet tx 0x... --json
+one-wallet wallet tx 0x...
+one-wallet wallet tx 0x... --json
 ```
 
 ---
@@ -182,22 +182,22 @@ cli-wallet wallet tx 0x... --json
 ## Development
 
 ```bash
-git clone https://github.com/viyozc/cli-wallet.git
-cd cli-wallet
+git clone https://github.com/viyozc/one-wallet.git
+cd one-wallet
 yarn install
 yarn build
 yarn test
 yarn lint
 ```
 
-- **Stack:** [oclif](https://oclif.io), [ethers](https://docs.ethers.org/) v6, [viem](https://viem.sh) (chains & preset ABIs), TypeScript.
+- **Stack:** [oclif](https://oclif.io), [ethers](https://docs.ethers.org/) v6, [viem](https://viem.sh), TypeScript.
 - **Commands:** under `src/commands/`; shared lib in `src/lib/`.
 
 ---
 
 ## Contributing
 
-Contributions are welcome. Please open an issue or a pull request on [GitHub](https://github.com/viyozc/cli-wallet).
+Contributions are welcome. Please open an issue or a pull request on [GitHub](https://github.com/viyozc/one-wallet).
 
 ---
 

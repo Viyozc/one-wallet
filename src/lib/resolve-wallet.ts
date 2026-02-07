@@ -6,16 +6,16 @@ import {loadConfig, loadWallets} from './store.js'
 export function resolveWalletPrivateKey(name?: string): {name: string; privateKey: string} {
   const data = loadWallets()
   const config = loadConfig()
-  const walletName = name ?? config.defaultWallet
+  const walletName = name ?? config.default
   if (!walletName) {
     throw new Error(
-      'No wallet specified and no default wallet. Set default: cli-wallet wallet config defaultWallet <name>',
+      'No wallet specified and no default wallet. Set default: agent-wallet wallet set default <name>',
     )
   }
 
   const entry = data.wallets[walletName]
   if (!entry) {
-    throw new Error(`Wallet "${walletName}" not found. List wallets: cli-wallet wallet list`)
+    throw new Error(`Wallet "${walletName}" not found. List wallets: agent-wallet wallet list`)
   }
 
   const pk = process.env[`AGENT_WALLET_KEY_${walletName.toUpperCase().replaceAll('-', '_')}`] ?? entry.privateKey

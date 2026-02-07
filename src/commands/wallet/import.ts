@@ -70,7 +70,7 @@ export default class WalletImport extends Command {
 
     if (flags.setDefault) {
       const config = loadConfig()
-      config.defaultWallet = name
+      config.default = name
       saveConfig(config)
     }
 
