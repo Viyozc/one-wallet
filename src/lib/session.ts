@@ -20,7 +20,7 @@ export interface SessionData {
 }
 
 function getTtlSec(): number {
-  const v = process.env.AGENT_WALLET_SESSION_TTL
+  const v = process.env.ONE_WALLET_SESSION_TTL
   if (v === undefined || v === '') return DEFAULT_TTL_SEC
   const n = Number.parseInt(v, 10)
   return Number.isNaN(n) || n < 0 ? DEFAULT_TTL_SEC : n

@@ -1,8 +1,8 @@
 import {Args, Command, Flags} from '@oclif/core'
 
-import {decryptPrivateKey} from '../../lib/crypto.js'
-import {isEncryptedWallet, loadWallets,saveWallets} from '../../lib/store.js'
-import {promptPassword} from '../../lib/ui.js'
+import {CorruptedCipherError, decryptPrivateKey, WrongPasswordError} from '../../lib/crypto.js'
+import {isEncryptedWallet, loadWallets, saveWallets} from '../../lib/store.js'
+import {promptPassword, readPasswordFromStdin} from '../../lib/ui.js'
 
 export default class WalletRemovePassword extends Command {
   static args = {
@@ -22,6 +22,10 @@ export default class WalletRemovePassword extends Command {
       default: false,
       description: 'Output success as JSON.',
     }),
+    passwordStdin: Flags.boolean({
+      default: false,
+      description: 'Read password from stdin (one line). Non-TTY only.',
+    }),
   }
 
   async run(): Promise<void> {
@@ -37,13 +41,17 @@ export default class WalletRemovePassword extends Command {
       this.error(`Wallet "${name}" is not password-protected.`)
     }
 
-    const password = await promptPassword(`Password for "${name}":`)
-    if (!password) this.error('Password is required.')
+    const password = flags.passwordStdin
+      ? (await readPasswordFromStdin(1))[0]
+      : await promptPassword(`Password for "${name}":`)
+    if (!password?.trim()) this.error('Password is required.')
     let privateKey: string
     try {
       privateKey = decryptPrivateKey(password, entry.cipher)
-    } catch {
-      this.error('Wrong password.')
+    } catch (error) {
+      if (error instanceof WrongPasswordError) this.error('Wrong password.')
+      if (error instanceof CorruptedCipherError) this.error('Corrupted cipher. ' + error.message)
+      throw error
     }
 
     data.wallets[name] = {

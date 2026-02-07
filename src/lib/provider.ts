@@ -9,7 +9,7 @@ export function getProvider(): ethers.JsonRpcProvider {
   const provider = loadProvider()
   const rpc =
     provider.rpcUrl ||
-    process.env.AGENT_WALLET_RPC_URL ||
+    process.env.ONE_WALLET_RPC_URL ||
     defaultRpc
   return new ethers.JsonRpcProvider(rpc)
 }
@@ -17,7 +17,7 @@ export function getProvider(): ethers.JsonRpcProvider {
 export function getChainId(): number {
   const provider = loadProvider()
   if (provider.chainId !== undefined) return provider.chainId
-  const env = process.env.AGENT_WALLET_CHAIN_ID
+  const env = process.env.ONE_WALLET_CHAIN_ID
   if (env !== undefined) {
     const n = Number.parseInt(env, 10)
     if (!Number.isNaN(n)) return n

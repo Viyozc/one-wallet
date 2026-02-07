@@ -1,8 +1,8 @@
 import {Args, Command, Flags} from '@oclif/core'
 
-import {decryptPrivateKey, encryptPrivateKey} from '../../lib/crypto.js'
-import {isEncryptedWallet, loadWallets,saveWallets} from '../../lib/store.js'
-import {promptPassword} from '../../lib/ui.js'
+import {CorruptedCipherError, decryptPrivateKey, encryptPrivateKey, WrongPasswordError} from '../../lib/crypto.js'
+import {isEncryptedWallet, loadWallets, saveWallets} from '../../lib/store.js'
+import {promptPassword, readPasswordFromStdin} from '../../lib/ui.js'
 
 export default class WalletSetPassword extends Command {
   static args = {
@@ -22,6 +22,10 @@ export default class WalletSetPassword extends Command {
       default: false,
       description: 'Output success as JSON.',
     }),
+    passwordStdin: Flags.boolean({
+      default: false,
+      description: 'Read password(s) from stdin (current, new, confirm — one per line). Non-TTY only.',
+    }),
   }
 
   async run(): Promise<void> {
@@ -33,14 +37,43 @@ export default class WalletSetPassword extends Command {
       this.error(`Wallet "${name}" not found.`)
     }
 
+    const isEncrypted = isEncryptedWallet(entry) && entry.cipher
+    let currentPassword: string | undefined
+    let newPassword: string
+    let confirmPassword: string
+
+    if (flags.passwordStdin) {
+      const lines = await readPasswordFromStdin(isEncrypted ? 3 : 2)
+      if (isEncrypted) {
+        currentPassword = lines[0]
+        newPassword = lines[1]
+        confirmPassword = lines[2]
+      } else {
+        newPassword = lines[0]
+        confirmPassword = lines[1]
+      }
+    } else {
+      if (isEncrypted) {
+        currentPassword = await promptPassword(`Current password for "${name}":`)
+        if (!currentPassword?.trim()) this.error('Password is required.')
+      }
+
+      newPassword = (await promptPassword('New password:')) ?? ''
+      confirmPassword = (await promptPassword('Confirm new password:')) ?? ''
+    }
+
+    if (!newPassword.trim()) this.error('New password cannot be empty.')
+    if (newPassword !== confirmPassword) this.error('Passwords do not match.')
+
     let privateKeyHex: string
-    if (isEncryptedWallet(entry) && entry.cipher) {
-      const current = await promptPassword(`Current password for "${name}":`)
-      if (!current) this.error('Password is required.')
+    if (isEncrypted && entry.cipher) {
+      if (!currentPassword?.trim()) this.error('Current password is required.')
       try {
-        privateKeyHex = decryptPrivateKey(current, entry.cipher)
-      } catch {
-        this.error('Wrong current password.')
+        privateKeyHex = decryptPrivateKey(currentPassword!, entry.cipher)
+      } catch (error) {
+        if (error instanceof WrongPasswordError) this.error('Wrong current password.')
+        if (error instanceof CorruptedCipherError) this.error('Corrupted cipher. ' + error.message)
+        throw error
       }
     } else if (entry.privateKey) {
       privateKeyHex = entry.privateKey
@@ -48,12 +81,7 @@ export default class WalletSetPassword extends Command {
       this.error(`Wallet "${name}" has no key or cipher.`)
     }
 
-    const password =
-      (await promptPassword('New password:')) || this.error('New password cannot be empty.')
-    const again = await promptPassword('Confirm new password:')
-    if (password !== again) this.error('Passwords do not match.')
-
-    const cipher = encryptPrivateKey(password, privateKeyHex)
+    const cipher = encryptPrivateKey(newPassword, privateKeyHex)
     data.wallets[name] = {
       address: entry.address,
       cipher,

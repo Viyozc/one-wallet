@@ -1,7 +1,7 @@
 {
   "name": "one-wallet",
   "description": "A Cli wallet for EVM chains, built for AI, agents, scripts, and automation.",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "author": "jerry",
   "bin": {
     "one-wallet": "./bin/run.js"

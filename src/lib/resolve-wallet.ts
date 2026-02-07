@@ -1,12 +1,12 @@
 import type {WalletEntry} from './store.js'
 
-import {decryptPrivateKey} from './crypto.js'
+import {CorruptedCipherError, decryptPrivateKey, WrongPasswordError} from './crypto.js'
 import {getCachedPassword, setCachedPassword} from './session.js'
 import {isEncryptedWallet, loadConfig, loadWallets} from './store.js'
 import {promptPassword} from './ui.js'
 
-const ENV_KEY_PREFIX = 'AGENT_WALLET_KEY_'
-const ENV_PASSWORD_PREFIX = 'AGENT_WALLET_PASSWORD_'
+const ENV_KEY_PREFIX = 'ONE_WALLET_KEY_'
+const ENV_PASSWORD_PREFIX = 'ONE_WALLET_PASSWORD_'
 
 function envKeyFor(name: string, prefix: string): string {
   return prefix + name.toUpperCase().replaceAll('-', '_')
@@ -17,7 +17,7 @@ const memoryPrivateKeyCache = new Map<string, string>()
 
 /**
  * Resolve wallet name to private key. Uses default wallet if name not given.
- * - AGENT_WALLET_KEY_<NAME>: override with raw private key (skip store).
+ * - ONE_WALLET_KEY_<NAME>: override with raw private key (skip store).
  * - Password-protected: session file stores encrypted password only; memory caches decrypted key for this process.
  */
 export async function resolveWalletPrivateKey(
@@ -28,7 +28,7 @@ export async function resolveWalletPrivateKey(
   const walletName = name ?? config.default
   if (!walletName) {
     throw new Error(
-      'No wallet specified and no default wallet. Set default: cli-wallet wallet set default <name>'
+      'No wallet specified and no default wallet. Set default: one-wallet wallet set default <name>'
     )
   }
 
@@ -39,7 +39,7 @@ export async function resolveWalletPrivateKey(
 
   const entry = data.wallets[walletName] as undefined | WalletEntry
   if (!entry) {
-    throw new Error(`Wallet "${walletName}" not found. List wallets: cli-wallet wallet list`)
+    throw new Error(`Wallet "${walletName}" not found. List wallets: one-wallet wallet list`)
   }
 
   if (entry.privateKey) {
@@ -83,8 +83,14 @@ export async function resolveWalletPrivateKey(
     memoryPrivateKeyCache.set(walletName, privateKey)
     return {name: walletName, privateKey}
   } catch (error) {
-    throw new Error(
-      'Wrong password or corrupted cipher. ' + ((error as Error).message ?? '')
-    )
+    if (error instanceof WrongPasswordError) {
+      throw new TypeError('Wrong password.')
+    }
+
+    if (error instanceof CorruptedCipherError) {
+      throw new TypeError('Corrupted cipher payload. ' + error.message)
+    }
+
+    throw error
   }
 }

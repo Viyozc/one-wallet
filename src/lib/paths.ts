@@ -5,10 +5,10 @@ import path from 'node:path'
 const dirName = 'one-wallet'
 
 /**
- * Base config directory (AGENT_WALLET_HOME or ~/.one-wallet)
+ * Base config directory (ONE_WALLET_HOME or ~/.one-wallet)
  */
 export function getConfigDir(): string {
-  const base = process.env.AGENT_WALLET_HOME || path.join(os.homedir(), '.one-wallet')
+  const base = process.env.ONE_WALLET_HOME || path.join(os.homedir(), '.one-wallet')
   const dir = path.join(base, dirName)
   if (!existsSync(dir)) {
     mkdirSync(dir, {recursive: true})

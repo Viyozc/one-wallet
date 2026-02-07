@@ -1,3 +1,4 @@
+import * as readline from 'node:readline'
 import chalk from 'chalk'
 import {createSpinner} from 'nanospinner'
 
@@ -75,4 +76,27 @@ export async function promptPassword(message: string): Promise<string> {
     },
   ])
   return password ?? ''
+}
+
+/**
+ * Read N lines from stdin (one password per line). Use with --password-stdin when non-TTY.
+ */
+export function readPasswordFromStdin(lineCount: number): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    const lines: string[] = []
+    const rl = readline.createInterface({input: process.stdin})
+    const onLine = (line: string) => {
+      lines.push(line.trim())
+      if (lines.length >= lineCount) {
+        rl.removeListener('line', onLine)
+        rl.close()
+        resolve(lines)
+      }
+    }
+    rl.on('line', onLine)
+    rl.on('close', () => {
+      if (lines.length < lineCount) resolve(lines)
+    })
+    rl.on('error', reject)
+  })
 }

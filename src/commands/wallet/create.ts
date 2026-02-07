@@ -3,7 +3,7 @@ import {ethers} from 'ethers'
 
 import {encryptPrivateKey} from '../../lib/crypto.js'
 import {loadConfig, loadWallets, saveConfig, saveWallets} from '../../lib/store.js'
-import {promptPassword, style, useFancyUi} from '../../lib/ui.js'
+import {promptPassword, readPasswordFromStdin, style, useFancyUi} from '../../lib/ui.js'
 
 export default class WalletCreate extends Command {
   static args = {
@@ -30,7 +30,11 @@ static flags = {
     }),
     password: Flags.boolean({
       default: false,
-      description: 'Encrypt private key with a password (prompt twice).',
+      description: 'Encrypt private key with a password (prompt twice or use --password-stdin).',
+    }),
+    passwordStdin: Flags.boolean({
+      default: false,
+      description: 'Read password and confirm from stdin (two lines). Use when non-TTY.',
     }),
     setDefault: Flags.boolean({
       default: false,
@@ -61,13 +65,19 @@ static flags = {
 
     let entry: import('../../lib/store.js').WalletEntry
     if (flags.password) {
-      const password =
-        (await promptPassword('Password:')) ||
-        this.error('Password cannot be empty.')
-      const again = await promptPassword('Confirm password:')
-      if (password !== again) {
-        this.error('Passwords do not match.')
+      let password: string
+      let again: string
+      if (flags.passwordStdin) {
+        const [p, a] = await readPasswordFromStdin(2)
+        password = p
+        again = a ?? ''
+      } else {
+        password = (await promptPassword('Password:')) ?? ''
+        again = (await promptPassword('Confirm password:')) ?? ''
       }
+
+      if (!password.trim()) this.error('Password cannot be empty.')
+      if (password !== again) this.error('Passwords do not match.')
 
       const cipher = encryptPrivateKey(password, wallet.privateKey)
       entry = {
