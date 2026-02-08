@@ -1,6 +1,6 @@
 # one-wallet
 
-**A CLI wallet for Ethereum and EVM chains—built for AI, Agents, scripts, AI code Clis(eg. Claude Code, Cursor, OpenCode...) and automation.**
+**A CLI wallet for Ethereum and EVM chains—built for agents, scripts, and automation. Optimized for AI code tools (Claude Code, Cursor, OpenCode, etc.): JSON output, non-interactive flags, and predictable usage.**
 
 Create and manage multiple wallets, query balances, send transactions, call contracts, and sign messages—all from the terminal with optional JSON output for piping into other AI tools.
 
@@ -95,9 +95,6 @@ yarn build
 ## Quick start
 
 ```bash
-# Show welcome and command overview
-one-wallet welcome
-
 # 1. Set RPC (preset or custom URL)
 one-wallet provider set mainnet
 # or: one-wallet provider set https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY
@@ -142,6 +139,7 @@ one-wallet wallet send 0xRecipientAddress 0.01
 | Command | Description |
 |--------|-------------|
 | `provider list` | Show current RPC and list built-in chain presets. |
+| `provider info` | Show current provider configuration (rpcUrl, chainId, preset; includes env overrides). |
 | `provider set <preset>` | Use a preset (e.g. `mainnet`, `sepolia`, `arbitrum`, `base`). |
 | `provider set <url>` | Use a custom RPC URL. |
 
@@ -149,7 +147,6 @@ one-wallet wallet send 0xRecipientAddress 0.01
 
 | Command | Description |
 |--------|-------------|
-| `welcome` | Print ASCII banner and short intro. |
 | `help [command]` | Show help for a command. |
 
 ---
@@ -223,6 +220,7 @@ one-wallet wallet call 0xToken 'totalSupply()(uint256)' --json
 # With preset ABI
 one-wallet wallet call 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 symbol --abi erc20
 one-wallet wallet call 0xToken balanceOf 0xAccountAddress --abi erc20
+one-wallet wallet call 0xToken allowance 0xAccountAddress,0xAccountAddress2 --abi erc20
 one-wallet wallet call 0xNFTContract ownerOf 1 --abi nft
 one-wallet wallet call 0xContract getValue --abi-file ./abi.json
 ```
@@ -313,6 +311,9 @@ one-wallet wallet remove unused --json
 ### Provider
 
 ```bash
+# Show current provider config (rpcUrl, chainId, preset)
+one-wallet provider info
+
 # List current RPC and available presets
 one-wallet provider list
 
@@ -326,11 +327,9 @@ one-wallet provider set https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY
 ### Other
 
 ```bash
-# Welcome banner and short intro
-one-wallet welcome
-
 # Help for a command
-one-wallet help wallet send
+one-wallet --help
+one-wallet wallet --help
 one-wallet wallet send --help
 ```
 

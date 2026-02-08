@@ -7,7 +7,11 @@ import {renderBanner, style} from '../lib/ui.js'
 const prerun: Hook<'prerun'> = async function (opts) {
   const {Command, argv} = opts
   const id = Command?.id ?? ''
-  const isRootHelp = id === 'help' && (!argv || argv.length === 0)
+  const noTopic =
+    !argv ||
+    argv.length === 0 ||
+    (argv.length === 1 && (argv[0] === '--help' || argv[0] === '-h'))
+  const isRootHelp = id === 'help' && noTopic
   if (!isRootHelp) return
 
   const bin = this.config.bin

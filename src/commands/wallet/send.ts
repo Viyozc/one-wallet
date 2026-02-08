@@ -9,13 +9,13 @@ import {confirm, style, useFancyUi, withSpinner} from '../../lib/ui.js'
 
 export default class WalletSend extends Command {
   static args = {
-    amount: Args.string({
-      description: 'Amount in ETH (e.g. 0.1) for native transfer; omit for contract call.',
-      required: false,
-    }),
     to: Args.string({
       description: 'Recipient address or contract address (for contract call).',
       required: true,
+    }),
+    amount: Args.string({
+      description: 'Amount in ETH (e.g. 0.1) for native transfer; omit for contract call.',
+      required: false,
     }),
   }
 static description =

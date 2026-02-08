@@ -50,25 +50,25 @@ export default class WalletTx extends Command {
     if (flags.json) {
       const txObj = {
         blockHash: tx.blockHash ?? null,
-        blockNumber: tx.blockNumber ?? null,
-        chainId: tx.chainId,
+        blockNumber: tx.blockNumber === null ? null : String(tx.blockNumber),
+        chainId: tx.chainId === null ? null : Number(tx.chainId),
         data: tx.data,
         from: tx.from,
         gasLimit: tx.gasLimit?.toString() ?? null,
         gasPrice: tx.gasPrice?.toString() ?? null,
         hash: tx.hash,
-        nonce: tx.nonce,
+        nonce: typeof tx.nonce === 'bigint' ? Number(tx.nonce) : tx.nonce,
         to: tx.to,
         value: tx.value.toString(),
       }
       const receiptObj = receipt
         ? {
             blockHash: receipt.blockHash,
-            blockNumber: receipt.blockNumber,
+            blockNumber: receipt.blockNumber === null ? null : String(receipt.blockNumber),
             cumulativeGasUsed: receipt.cumulativeGasUsed.toString(),
             gasUsed: receipt.gasUsed.toString(),
             logs: receipt.logs.length,
-            status: receipt.status,
+            status: typeof receipt.status === 'bigint' ? Number(receipt.status) : receipt.status,
           }
         : null
       this.log(JSON.stringify({...txObj, receipt: receiptObj}))
