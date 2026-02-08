@@ -1,8 +1,8 @@
 # one-wallet
 
-**A CLI wallet for Ethereum and EVM chains—built for agents, scripts, and automation.**
+**A CLI wallet for Ethereum and EVM chains—built for AI, Agents, scripts, AI code Clis(eg. Claude Code, Cursor, OpenCode...) and automation.**
 
-Create and manage multiple wallets, query balances, send transactions, call contracts, and sign messages—all from the terminal with optional JSON output for piping into other tools.
+Create and manage multiple wallets, query balances, send transactions, call contracts, and sign messages—all from the terminal with optional JSON output for piping into other AI tools.
 
 [![npm version](https://img.shields.io/npm/v/one-wallet.svg)](https://www.npmjs.com/package/one-wallet)
 [![Node.js](https://img.shields.io/node/v/one-wallet)](https://nodejs.org)
@@ -52,7 +52,7 @@ Create and manage multiple wallets, query balances, send transactions, call cont
 ## Features
 
 - **Multi-wallet** — Create, list, import (private key or stdin), and switch default wallet by name.
-- **Native & contract** — Send ETH, call view/pure methods, or invoke contract writes (e.g. ERC20 `transfer`) with the same `send` command.
+- **Native & contract** — Send ETH, call view/pure methods, or invoke contract writes (e.g. ERC20 `transfer`) with the same `send` command, it also support cast-styled calls with method signature.
 - **Preset ABIs** — Use `--abi erc20`, `--abi nft`, `--abi erc721`, `--abi erc1155`, or `--abi erc4626` instead of passing raw ABI JSON.
 - **Signing** — EIP-191 message signing, EIP-712 typed data signing, and signature verification / address recovery.
 - **Gas & tx** — Estimate gas before sending; fetch transaction status and receipt by hash.
@@ -125,7 +125,7 @@ one-wallet wallet send 0xRecipientAddress 0.01
 | `wallet path` | Print the directory where wallet and config files are stored. |
 | `wallet balance [name]` | Native ETH balance of a stored wallet (default wallet if name omitted). |
 | `wallet balance-of <address>` | Native ETH balance of any address. |
-| `wallet call <contract> <method> [args]` | Read-only contract call. Use `--abi <preset>` or `--abi-file <path>`. |
+| `wallet call <contract> <method> [args]` | Read-only contract call. Use `--abi` / `--abi-file`, or cast-style method with quotes: `'name(in)(out)'` (e.g. `'decimals()(uint256)'`). |
 | `wallet send <to> [amount]` | Send ETH, or use `--method` / `--args` / `--abi` for contract writes. `-y` skips confirm. |
 | `wallet estimate <to> [value]` | Estimate gas (native transfer or contract call, same args as `send`). |
 | `wallet tx <hash>` | Get transaction and receipt (status, block, gas used). |
@@ -215,19 +215,15 @@ one-wallet wallet balance-of 0x742d35Cc6634C0532925a3b844Bc454e4438f44e --json
 ### Contract call (read-only)
 
 ```bash
-# ERC20 symbol (preset ABI)
+# Cast-style (no ABI): use single quotes so shell does not interpret parentheses
+one-wallet wallet call 0xToken 'decimals()(uint256)'
+one-wallet wallet call 0xToken 'balanceOf(address)(uint256)' 0xAccountAddress
+one-wallet wallet call 0xToken 'totalSupply()(uint256)' --json
+
+# With preset ABI
 one-wallet wallet call 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 symbol --abi erc20
-
-# ERC20 totalSupply
-one-wallet wallet call 0xA0b8... totalSupply --abi erc20 --json
-
-# ERC20 balanceOf(account)
 one-wallet wallet call 0xToken balanceOf 0xAccountAddress --abi erc20
-
-# NFT ownerOf(tokenId)
 one-wallet wallet call 0xNFTContract ownerOf 1 --abi nft
-
-# Custom ABI from file
 one-wallet wallet call 0xContract getValue --abi-file ./abi.json
 ```
 
