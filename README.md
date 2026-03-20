@@ -1,8 +1,8 @@
 # one-wallet
 
-**A CLI wallet for Ethereum and EVM chains—built for agents, scripts, and automation. Optimized for AI code tools (Claude Code, Cursor, OpenCode, etc.): JSON output, non-interactive flags, and predictable usage.**
+**A CLI wallet for Ethereum and EVM chains-built for agents, scripts, and automation. Optimized for AI code tools (Claude Code, Cursor, OpenCode, etc.): JSON output, non-interactive flags, and predictable usage.**
 
-Create and manage multiple wallets, query balances, send transactions, call contracts, and sign messages—all from the terminal with optional JSON output for piping into other AI tools.
+Create and manage multiple wallets, query balances, send transactions, call contracts, and sign messages-all from the terminal with optional JSON output for piping into other AI tools.
 
 [![npm version](https://img.shields.io/npm/v/one-wallet.svg)](https://www.npmjs.com/package/one-wallet)
 [![Node.js](https://img.shields.io/node/v/one-wallet)](https://nodejs.org)
@@ -59,7 +59,8 @@ Create and manage multiple wallets, query balances, send transactions, call cont
 - **Multi-chain** — Built-in RPC presets (mainnet, sepolia, arbitrum, base, polygon, etc.) via `provider set <preset>` or custom URL.
 - **Script-friendly** — `--json` on commands for machine-readable output; `-y` to skip send confirmation in non-interactive use.
 - **Polished CLI** — Colored output, spinners for async operations, and optional confirmation prompts (when TTY).
-- **Password protection** — Optional encryption for stored keys; unlock via password prompt or env; session cache so you don’t re-enter password every command.
+- **Password protection** — Optional encryption for stored keys; unlock via password prompt or env; session cache so you don't re-enter password every command.
+- **Agent-ready** — Designed for AI code tools (Claude Code, Cursor, OpenCode) with structured JSON output and predictable error handling.
 
 ---
 
@@ -362,10 +363,10 @@ one-wallet wallet send 0xNFT --method safeTransferFrom --args 0xFrom,0xTo,1 --ab
 
 ## Password protection
 
-- **Create/import with password** — Use `--password` when creating or importing; you will be prompted twice. Only an **encrypted** key (cipher) is stored; the raw private key is never written to disk.
-- **Encrypt later** — Use `wallet set-password <name>` to encrypt an existing wallet.
-- **Remove encryption** — Use `wallet remove-password <name>`; you must enter the current password; the key is then stored in plain form (use only if you understand the risk).
-- **Unlocking** — When a command needs the key for an encrypted wallet, one-wallet will:
+- **Create/import with password** - Use `--password` when creating or importing; you will be prompted twice. Only an **encrypted** key (cipher) is stored; the raw private key is never written to disk.
+- **Encrypt later** - Use `wallet set-password <name>` to encrypt an existing wallet.
+- **Remove encryption** - Use `wallet remove-password <name>`; you must enter the current password; the key is then stored in plain form (use only if you understand the risk).
+- **Unlocking** - When a command needs the key for an encrypted wallet, one-wallet will:
   1. Use in-memory key if already decrypted in this process.
   2. Else use **session cache** (encrypted password only; see [Session](#session-unlock-cache)).
   3. Else use env `ONE_WALLET_PASSWORD_<NAME>` if set.
@@ -377,12 +378,12 @@ one-wallet wallet send 0xNFT --method safeTransferFrom --args 0xFrom,0xTo,1 --ab
 
 ## Session (unlock cache)
 
-After you enter the password (e.g. for an encrypted wallet), it can be cached for a short time so the next commands don’t ask again.
+After you enter the password (e.g. for an encrypted wallet), it can be cached for a short time so the next commands don't ask again.
 
-- **What is cached** — Only an **encrypted** password in a session file. The session key is stored in a separate file (`session.key`). The **private key is never written to the session**; it is kept only in memory.
-- **TTL** — Session entries expire after a number of seconds. Set via env: `ONE_WALLET_SESSION_TTL` (default: `300`).
-- **Lock** — Run `one-wallet wallet lock` to clear the session file. The next use of an encrypted wallet will ask for the password again (or use env).
-- **Non-interactive** — In scripts or CI, use `ONE_WALLET_PASSWORD_<WALLET_NAME>` to supply the password so no prompt is needed. The password is not written to the session when it comes from env.
+- **What is cached** - Only an **encrypted** password in a session file. The session key is stored in a separate file (`session.key`). The **private key is never written to the session**; it is kept only in memory.
+- **TTL** - Session entries expire after a number of seconds. Set via env: `ONE_WALLET_SESSION_TTL` (default: `300`).
+- **Lock** - Run `one-wallet wallet lock` to clear the session file. The next use of an encrypted wallet will ask for the password again (or use env).
+- **Non-interactive** - In scripts or CI, use `ONE_WALLET_PASSWORD_<WALLET_NAME>` to supply the password so no prompt is needed. The password is not written to the session when it comes from env.
 
 ---
 
