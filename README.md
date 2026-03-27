@@ -108,6 +108,8 @@ one-wallet wallet balance
 one-wallet wallet send 0xRecipientAddress 0.01
 ```
 
+> **💡 Tip for AI agents:** Use `--json` flag on any command to get machine-readable output. This makes it easy to parse results in scripts or AI workflows without worrying about colored terminal output or human formatting.
+
 ---
 
 ## Commands overview
