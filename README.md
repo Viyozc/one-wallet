@@ -108,6 +108,26 @@ one-wallet wallet balance
 one-wallet wallet send 0xRecipientAddress 0.01
 ```
 
+### Complete workflow example
+
+```bash
+# Setup: Configure provider and create encrypted wallet
+one-wallet provider set mainnet
+one-wallet wallet create prod-wallet --password --set-default
+
+# Check your wallet address and balance (output as JSON for scripting)
+one-wallet wallet balance --json
+
+# Query ERC20 token balance (USDC on mainnet)
+one-wallet wallet call 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 balanceOf 0xYourAddress --abi erc20
+
+# Send ERC20 tokens (automatically approves if needed)
+one-wallet wallet send 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 --method transfer --args 0xRecipient,1000000 --abi erc20
+
+# Get transaction receipt and status
+one-wallet wallet tx 0xTransactionHash --json
+```
+
 > **💡 Tip for AI agents:** Use `--json` flag on any command to get machine-readable output. This makes it easy to parse results in scripts or AI workflows without worrying about colored terminal output or human formatting.
 
 ---
