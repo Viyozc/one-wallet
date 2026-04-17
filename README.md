@@ -10,6 +10,22 @@ Create and manage multiple wallets, query balances, send transactions, call cont
 
 ---
 
+## Why one-wallet?
+
+**Built for automation, not just convenience.**
+
+Most wallet CLI tools are designed for human interaction. `one-wallet` is different — it's engineered for scripts, bots, and AI agents:
+
+- **No prompts in pipelines** — All commands support `-y` for non-interactive mode
+- **JSON first** — Every command outputs structured JSON when you need it
+- **Predictable errors** — Standard error codes and messages for programmatic handling
+- **Multi-wallet workflow** — Switch between dev/staging/prod wallets without API keys
+- **Lightweight** — No daemon, no browser wallet connection, just a CLI tool
+
+Perfect for: automated testing, CI/CD deployments, trading bots, and AI agent workflows.
+
+---
+
 ## Table of contents
 
 - [one-wallet](#one-wallet)
