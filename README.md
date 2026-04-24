@@ -395,6 +395,10 @@ one-wallet wallet send 0xToken --method transfer --args 0xTo,1000000 --abi erc20
 # NFT owner and safeTransferFrom
 one-wallet wallet call 0xNFT ownerOf 1 --abi nft
 one-wallet wallet send 0xNFT --method safeTransferFrom --args 0xFrom,0xTo,1 --abi nft
+
+# ERC4626 vault operations: query and deposit
+one-wallet wallet call 0xVault totalAssets --abi erc4626 --json
+one-wallet wallet send 0xVault --method deposit --args 1000000,0xRecipient --abi erc4626 -y
 ```
 
 ---
