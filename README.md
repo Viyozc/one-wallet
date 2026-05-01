@@ -144,7 +144,7 @@ one-wallet wallet send 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 --method trans
 one-wallet wallet tx 0xTransactionHash --json
 ```
 
-> **💡 Tip for AI agents:** Use `--json` flag on any command to get machine-readable output. This makes it easy to parse results in scripts or AI workflows without worrying about colored terminal output or human formatting.
+> **💡 Tip for AI agents:** Use `--json` flag on any command to get machine-readable output. This makes it easy to parse results in scripts or AI workflows without worrying about colored terminal output or human formatting. Example: `one-wallet wallet balance --json | jq '.balance'` extracts just the balance value for programmatic use.
 
 ---
 
