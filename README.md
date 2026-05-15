@@ -76,7 +76,7 @@ Perfect for: automated testing, CI/CD deployments, trading bots, and AI agent wo
 - **Script-friendly** — `--json` on commands for machine-readable output; `-y` to skip send confirmation in non-interactive use.
 - **Polished CLI** — Colored output, spinners for async operations, and optional confirmation prompts (when TTY).
 - **Password protection** — Optional encryption for stored keys; unlock via password prompt or env; session cache so you don't re-enter password every command.
-- **Agent-ready** — Designed for AI code tools (Claude Code, Cursor, OpenCode) with structured JSON output, predictable error handling, and non-interactive flags (-y) for seamless automation in workflows.
+- **Agent-ready** — Designed for AI code tools (Claude Code, Cursor, OpenCode) with structured JSON output, predictable error handling, and non-interactive flags (-y) for seamless automation in workflows without human intervention.
 
 ---
 
