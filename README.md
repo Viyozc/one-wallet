@@ -24,6 +24,12 @@ Most wallet CLI tools are designed for human interaction. `one-wallet` is differ
 
 Perfect for: automated testing, CI/CD deployments, trading bots, and AI agent workflows.
 
+**Example:** In a GitHub Action, you can validate contract deployments by querying balances and transaction receipts in seconds:
+```bash
+one-wallet provider set mainnet
+one-wallet wallet send 0xDeployedContract 0.01 -y --json | jq '.hash'
+```
+
 ---
 
 ## Table of contents
